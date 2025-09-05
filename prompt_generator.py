@@ -9,11 +9,27 @@ It reads the necessary context files and creates a complete prompt with all requ
 import os
 import re
 from typing import Dict, List, Optional
+import logging
+import sys
+import subprocess
+
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('prompt_generator.log'),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
+
 
 class PromptGenerator:
     def __init__(self, project_root: str = "."):
         self.project_root = project_root
-        self.discussion_folder = 'discussion'
+        self.discussion_folder = 'discussions'
         self.context_files = {
             'README.md': 'Project description, methodology, and contribution guidelines',
             'topics.md': 'Complete list of topics and discussion process',
@@ -248,6 +264,39 @@ Remember: Your role is to provide expert insight from your specific area of expe
         matches = re.findall(topic_pattern, topics_content)
         
         return matches
+    
+    def run_cursor_agent(self, agent_prompt: str, simulation: bool = False) -> bool:
+        """Run cursor-agent with the specified parameters."""
+
+        cmd = [
+            'cursor-agent',
+            '-p', 
+            agent_prompt
+        ]
+        # logger.info(f"Command: {' '.join(cmd)}")
+        
+        try:
+            # Run cursor-agent
+            if simulation:
+                # logger.info(f"Command: {' '.join(cmd)}")
+                return True
+            else:
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # 5 minute timeout
+            
+                if result.returncode == 0:
+                    logger.info(f"prompt completed successfully")
+                    return True
+                else:
+                    logger.error(f"prompt failed with return code {result.returncode}")
+                    logger.error(f"Error output: {result.stderr}")
+                    return False
+                
+        except subprocess.TimeoutExpired:
+            logger.error(f"prompt timed out after 5 minutes")
+            return False
+        except Exception as e:
+            logger.error(f"Error running prompt: {e}")
+            return False    
 
 def main():
     """Command-line interface for the prompt generator."""
@@ -255,22 +304,40 @@ def main():
     
     generator = PromptGenerator()
     
-    if len(sys.argv) < 3:
-        print("Usage: python prompt_generator.py <agent_name> <topic_title>")
-        print(f"Available agents: {', '.join(generator.list_available_agents())}")
-        print(f"Available topics: {', '.join(generator.list_available_topics())}")
-        return
+    # if len(sys.argv) < 3 :
+    #     print("Usage: python prompt_generator.py <agent_name> <topic_title>")
+    #     print(f"Available agents: {', '.join(generator.list_available_agents())}")
+    #     print(f"Available topics: {', '.join(generator.list_available_topics())}")
+    #     return
+
+    # agent_name = sys.argv[1]
+    # topic_title = sys.argv[2]
     
-    agent_name = sys.argv[1]
-    topic_title = sys.argv[2]
+    # try:
+    #     prompt = generator.generate_prompt(agent_name, topic_title)
+    #     print(prompt)
+    # except ValueError as e:
+    #     print(f"Error: {e}")
+    # except Exception as e:
+    #     print(f"Unexpected error: {e}")
+
+    simulation = False
+    if simulation:
+        logger.info(f"Simulation mode enabled")
+    else:
+        logger.info(f"Simulation mode disabled")
+
+    for topic in list(generator.list_available_topics()):
+        for agent in list(generator.list_available_agents()):
+            print(f"{agent} {topic} starting")
+            prompt = generator.generate_prompt(agent, topic)
+            generator.run_cursor_agent(prompt, simulation)
+            print(f"{agent} {topic} completed")
+        print(f"topic {topic} completed")
+        print("\n\n")
+        break
+    return
     
-    try:
-        prompt = generator.generate_prompt(agent_name, topic_title)
-        print(prompt)
-    except ValueError as e:
-        print(f"Error: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
 
 if __name__ == "__main__":
     main()
