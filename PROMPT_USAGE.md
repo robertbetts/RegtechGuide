@@ -36,7 +36,7 @@ python prompt_generator.py positive_expert "The Business Case for Regtech"
 - `moderator`
 - `positive_expert`
 - `software_engineer`
-- `functional_architect`
+- `architect`
 - `sre`
 - `negative_expert`
 

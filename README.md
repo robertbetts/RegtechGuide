@@ -13,7 +13,7 @@ This Regtech Guide will provide a comprehensive guidence covering all aspects of
 - **moderator**: Curate, introduce, moderate, expand and summarise all topics.
 - **positive_expert**: Present optimistic, supportive, and forward-thinking perspectives on regtech topics, while maintaining factual accuracy and substantiating all claims.
 - **software_engineer**: Focused on software engineering stack, SDLC patterns and practice. Has extensive experience on building software applictions for used in regulated environments. 
-- **functional_architect**: Focused on process and regulated requirements, expert of all regulated aspects that govern use and implementation of technology in regulated environments. 
+- **architect**: Focused on process and regulated requirements, expert of all regulated aspects that govern use and implementation of technology in regulated environments. 
 - **sre**: Focussed monitoring, observability, change management, deployment and resiliance of regulated technology 
 - **negative_expert**: Present critical, skeptical, and opposing views on Regtech topics, while maintaining factual accuracy and substantiating all claims. Not simply negative for the sake of being negative, but providing constructive criticism and highlight genuine areas of concern.
 

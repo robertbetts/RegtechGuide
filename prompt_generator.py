@@ -12,6 +12,7 @@ from typing import Dict, List, Optional
 import logging
 import sys
 import subprocess
+from collections import OrderedDict
 
 
 # Configure logging
@@ -35,14 +36,14 @@ class PromptGenerator:
             'topics.md': 'Complete list of topics and discussion process',
         }
         
-        self.agent_personas = {
-            'moderator': 'moderator.md',
-            'positive_expert': 'positive_expert.md',
-            'software_engineer': 'software_engineer.md',
-            'functional_architect': 'functional_architect.md',
-            'sre': 'sre.md',
-            'negative_expert': 'negative_expert.md'
-        }
+        self.agent_personas = OrderedDict([
+            ('moderator', 'moderator.md'),
+            ('positive_expert', 'positive_expert.md'),
+            ('architect', 'architect.md'),
+            ('software_engineer', 'software_engineer.md'),
+            ('sre', 'sre.md'),
+            ('negative_expert', 'negative_expert.md')
+        ])
 
     def read_file(self, filepath: str) -> str:
         """Read a file and return its contents."""
@@ -121,7 +122,9 @@ class PromptGenerator:
         
         return characteristics
 
-    def generate_prompt(self, agent_name: str, topic_title: str) -> str:
+    
+
+    def generate_prompt(self, agent_name: str, topic_title: str, activity: str = '') -> str:
         """Generate a complete prompt for the specified agent and topic."""
         
         # Validate agent name
@@ -137,6 +140,37 @@ class PromptGenerator:
         # Generate discussion file name
         topic_number = self.get_topic_number(topic_title)
         discussion_file = f"{self.discussion_folder}/{topic_number:02d}_{topic_title.lower().replace(' ', '_').replace('&', 'and')}.md"
+        
+        if activity == "setup":
+            contribution_requirements = """
+## Your Contribution Requirements
+
+1. **initialize the discussion**: create the discussion file and introduce the topic, {discussion_file}
+6. **Use UK English**: Maintain UK English throughout your contribution
+"""            
+        elif activity == "wrap_up":
+            contribution_requirements = """
+## Your Contribution Requirements
+
+1. **Read and Understand**: Review all context files, especially your persona file and any existing contributions
+2. **Provide and extended Perspective**: Contribute from your specific expertise area and persona characteristics
+3. **Wrap Up and Summarise**: Synthesise the discussion and provide a conclusion for the topic
+4. **Include proper references and citations for all claims**
+5. **Substantiate Claims**: All facts must be substantiated by publicly available content or code
+6. **Use UK English**: Maintain UK English throughout your contribution
+7. **End Appropriately**: Conclude your contribution with "agent {agent_name} complete"        
+"""
+        else:
+            contribution_requirements = """
+## Your Contribution Requirements
+
+1. **Read and Understand**: Review all context files, especially your persona file and any existing contributions
+2. **Provide Expert Perspective**: Contribute from your specific expertise area and persona characteristics
+3. **Substantiate Claims**: All facts must be substantiated by publicly available content or code
+4. **Include proper references and citations for all claims**
+5. **Use UK English**: Maintain UK English throughout your contribution
+6. **End Appropriately**: Conclude your contribution with "agent {agent_name} complete"        
+"""
         
         # Build the prompt
         prompt = f"""You are the {agent_name} agent contributing to the Regtech Guide project. Your role is to provide expert perspective on the topic "{topic_title}" following your specific persona characteristics and expertise.
@@ -177,13 +211,7 @@ Based on your persona file ({self.agent_personas[agent_name]}), you should:
 
 **Current Status**: {topic_info['status']}
 
-## Your Contribution Requirements
-
-1. **Read and Understand**: Review all context files, especially your persona file and any existing contributions
-2. **Provide Expert Perspective**: Contribute from your specific expertise area and persona characteristics
-3. **Substantiate Claims**: All facts must be substantiated by publicly available content or code
-4. **Use UK English**: Maintain UK English throughout your contribution
-5. **End Appropriately**: Conclude your contribution with "agent {agent_name} complete"
+{contribution_requirements}
 
 ## Contribution Guidelines
 
@@ -328,14 +356,24 @@ def main():
         logger.info(f"Simulation mode disabled")
 
     for topic in list(generator.list_available_topics()):
-        for agent in list(generator.list_available_agents()):
+        agent = "moderator"
+        print(f"{agent} {topic} setting up")
+        prompt = generator.generate_prompt(agent, topic, activity="setup")
+        generator.run_cursor_agent(prompt, simulation)
+                                           
+        for agent in [a for a in generator.list_available_agents() if a != "moderator"]:
             print(f"{agent} {topic} starting")
             prompt = generator.generate_prompt(agent, topic)
             generator.run_cursor_agent(prompt, simulation)
             print(f"{agent} {topic} completed")
+            
+        agent = "moderator"
+        print(f"{agent} {topic} summarising")
+        prompt = generator.generate_prompt(agent, topic, activity="wrap_up")
+        generator.run_cursor_agent(prompt, simulation)
         print(f"topic {topic} completed")
         print("\n\n")
-        break
+        
     return
     
 

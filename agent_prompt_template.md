@@ -111,7 +111,7 @@ Remember: Your role is to provide expert insight from your specific area of expe
 ### For Each Agent Contribution:
 
 1. **Replace Placeholders**:
-   - `[AGENT_NAME]`: The specific agent (moderator, positive_expert, software_engineer, functional_architect, sre, negative_expert)
+   - `[AGENT_NAME]`: The specific agent (moderator, positive_expert, software_engineer, architect, sre, negative_expert)
    - `[AGENT_PERSONA_FILE]`: The corresponding persona file (moderator.md, positive_expert.md, etc.)
    - `[TOPIC_TITLE]`: The specific topic title from topics.md
    - `[TOPIC_DESCRIPTION]`: The topic description from topics.md
