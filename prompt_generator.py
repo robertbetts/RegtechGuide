@@ -18,7 +18,7 @@ from collections import OrderedDict
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='%(asctime)s %(levelname)s %(lineno)-4d %(message)s',
     handlers=[
         logging.FileHandler('prompt_generator.log'),
         logging.StreamHandler(sys.stdout)

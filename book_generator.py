@@ -20,7 +20,7 @@ import logging
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format='%(asctime)s %(levelname)s %(lineno)-4d %(message)s',
     handlers=[
         logging.FileHandler('book_generation.log'),
         logging.StreamHandler(sys.stdout)
