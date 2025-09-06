@@ -1,13 +1,10 @@
 # Regtech Guid
 
-Generative AI guide for building technology platforms and systems in regulated environments.
-
-This project make use the FintechForge Method and agentic generative AI to curate content for a reglatory technology guide following the FintechForge Method.
+A guide for building technology platforms and systems in regulated environments. The FintechForge Method together with agentic, generative AI is used for all content creation.
 
 ## Highlevel book description
 
 This Regtech Guide will provide a comprehensive guidence covering all aspects of aquiring, building, deploying and running software in regulated environments. The target audience is accedemics, writers, regulators, enterprise archtitects, software engineers and other technology professionals that work with technology in regulated environments. 
-
 
 ## Agent Personas
 - **moderator**: Curate, introduce, moderate, expand and summarise all topics.
