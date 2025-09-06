@@ -1,4 +1,4 @@
-# Regtech Guid
+# Regtech Guide
 
 A guide for building technology platforms and systems in regulated environments. The FintechForge Method together with agentic, generative AI is used for all content creation.
 
