@@ -18,7 +18,7 @@ This Regtech Guide will provide a comprehensive guidence covering all aspects of
 
 All facts presented must always be substantiated by publicly available content and or code. tracking the reference sources is very important. The medium of communication will be UK English or the Python programming language as appropriate.
 
-## FintechForge Method
+## FintechForge Method
 
 A document topics.md, will contain a list of relevant discussion topics. Each topic will be tracked as completed, in_discussion and future_topic.
 
