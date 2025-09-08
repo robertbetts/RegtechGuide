@@ -14,7 +14,7 @@ This Regtech Guide provides a comprehensive reference guide covering all aspects
 - **sre**: Focused on monitoring, observability, change management, deployment and resilience of regulated technology. 
 - **negative_expert**: Present critical, skeptical, and opposing views on regtech topics, while maintaining factual accuracy and substantiating all claims. Not simply negative for the sake of being negative, but providing constructive criticism and highlighting genuine areas of concern.
 
-## General Contribution Guidelines
+## Topic Contribution Guidelines
 
 All facts presented must always be substantiated by publicly available content. 
 - Recording source references of facts and quotes is required. 
