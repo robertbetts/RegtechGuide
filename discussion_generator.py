@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Prompt Generator for Regtech Guide Agent Contributions
+Discussion Generator for Regtech Guide Agent Contributions
 
 This script generates customized prompts for each agent persona when contributing to topics.
 It reads the necessary context files and creates a complete prompt with all required information.
@@ -13,6 +13,8 @@ import logging
 import sys
 import subprocess
 from collections import OrderedDict
+from pathlib import Path
+import time
 
 
 # Configure logging
@@ -20,20 +22,23 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(lineno)-4d %(message)s',
     handlers=[
-        logging.FileHandler('prompt_generator.log'),
+        logging.FileHandler('discussion_generator.log'),
         logging.StreamHandler(sys.stdout)
     ]
 )
 logger = logging.getLogger(__name__)
 
 
-class PromptGenerator:
-    def __init__(self, project_root: str = "."):
-        self.project_root = project_root
-        self.discussion_folder = 'discussions'
+class DiscussionGenerator:
+    def __init__(self, project_root: str = ".", simulation: bool = False):
+        self.simulation = simulation
+        self.project_root = Path(project_root)
+        self.personas_folder = self.project_root / 'personas'
+        self.discussion_folder = self.project_root / 'discussions'
+        self.topics_file = self.discussion_folder / 'topics.md'
         self.context_files = {
-            'README.md': 'Project description, methodology, and contribution guidelines',
-            'topics.md': 'Complete list of topics and discussion process',
+            './README.md': 'Project description, methodology, and contribution guidelines',
+            './discussions/topics.md': 'Complete list of discussion topics',
         }
         
         self.agent_personas = OrderedDict([
@@ -44,18 +49,23 @@ class PromptGenerator:
             ('sre', 'sre.md'),
             ('negative_expert', 'negative_expert.md')
         ])
-
-    def read_file(self, filepath: str) -> str:
-        """Read a file and return its contents."""
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return f.read()
-        except FileNotFoundError:
-            return f"File not found: {filepath}"
+        
+        self.topics = OrderedDict()
+        for topic in self.list_available_topics():
+            topic_number = self.get_topic_number(topic)
+            topic_status = self.get_topic_status(topic)
+            self.topics[topic] = {
+                'topic': topic,
+                'number': topic_number,
+                'status': topic_status
+            }
+        
 
     def extract_topic_info(self, topic_title: str) -> Dict[str, str]:
         """Extract topic information from topics.md."""
-        topics_content = self.read_file(os.path.join(self.project_root, 'topics.md'))
+        
+        with open(self.topics_file, 'r', encoding='utf-8') as infile:
+            topics_content = infile.read()
         
         # Find the topic section
         topic_pattern = rf"### \d+\. {re.escape(topic_title)}"
@@ -91,11 +101,12 @@ class PromptGenerator:
 
     def extract_persona_characteristics(self, agent_name: str) -> Dict[str, str]:
         """Extract key characteristics from agent persona file."""
-        persona_file = self.agent_personas.get(agent_name)
-        if not persona_file:
-            return {}
+        persona_file_name = self.agent_personas.get(agent_name)
+        persona_file = self.personas_folder / persona_file_name
         
-        persona_content = self.read_file(os.path.join(self.project_root, persona_file))
+        with open(persona_file, 'r', encoding='utf-8') as infile:
+            persona_content = infile.read()
+
         
         # Extract key sections
         characteristics = {}
@@ -186,6 +197,7 @@ Please review these essential context files before contributing:
 ### Current Topic Context
 - {discussion_file}: Current discussion file for this topic (if exists)
 - Previous agent contributions (if any)
+- If the topic is completed, then do not contribute to the topic.
 
 ## Your Role as {agent_name}
 
@@ -268,7 +280,8 @@ Remember: Your role is to provide expert insight from your specific area of expe
 
     def get_topic_number(self, topic_title: str) -> int:
         """Extract topic number from topics.md."""
-        topics_content = self.read_file(os.path.join(self.project_root, 'topics.md'))
+        with open(self.topics_file, 'r', encoding='utf-8') as infile:
+            topics_content = infile.read()
         
         # Find the topic number
         topic_pattern = rf"### (\d+)\. {re.escape(topic_title)}"
@@ -279,13 +292,31 @@ Remember: Your role is to provide expert insight from your specific area of expe
         else:
             return 0
 
+
+    def get_topic_status(self, topic_title: str) -> str:
+        """Get topic status from topics.md."""
+        with open(self.topics_file, 'r', encoding='utf-8') as infile:
+            topics_content = infile.read()
+        
+        # Find the topic status
+        topic_pattern = rf"### \d+\. {re.escape(topic_title)}\n\*\*Status\*\*: (.+)"
+        matches = re.findall(topic_pattern, topics_content)
+        # print(f"match: {matches}")
+        if matches:
+             return matches[0].strip()
+        else:
+            return 'future_topic'
+
+
     def list_available_agents(self) -> List[str]:
         """Return list of available agent names."""
         return list(self.agent_personas.keys())
 
+
     def list_available_topics(self) -> List[str]:
         """Return list of available topics from topics.md."""
-        topics_content = self.read_file(os.path.join(self.project_root, 'topics.md'))
+        with open(self.topics_file, 'r', encoding='utf-8') as infile:
+            topics_content = infile.read()
         
         # Find all topic titles
         topic_pattern = r"### \d+\. (.+)"
@@ -293,7 +324,7 @@ Remember: Your role is to provide expert insight from your specific area of expe
         
         return matches
     
-    def run_cursor_agent(self, agent_prompt: str, simulation: bool = False) -> bool:
+    def run_cursor_agent(self, agent_prompt: str, simulation: bool = False, capture_output: bool = False) -> bool:
         """Run cursor-agent with the specified parameters."""
 
         cmd = [
@@ -301,53 +332,44 @@ Remember: Your role is to provide expert insight from your specific area of expe
             '-p', 
             agent_prompt
         ]
-        # logger.info(f"Command: {' '.join(cmd)}")
-        
-        try:
-            # Run cursor-agent
-            if simulation:
-                # logger.info(f"Command: {' '.join(cmd)}")
-                return True
-            else:
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # 5 minute timeout
-            
-                if result.returncode == 0:
-                    logger.info(f"prompt completed successfully")
+        # logger.debug(f"Command: {' '.join(cmd)}")
+
+        retry_count = 0
+        while True:        
+            try:
+                # Run cursor-agent
+                if simulation:
+                    logger.debug(f"Simulation mode: {simulation}")
                     return True
                 else:
-                    logger.error(f"prompt failed with return code {result.returncode}")
-                    logger.error(f"Error output: {result.stderr}")
-                    return False
+                    result = subprocess.run(cmd, capture_output=capture_output, text=True, timeout=180)  # 3 minute timeout
                 
-        except subprocess.TimeoutExpired:
-            logger.error(f"prompt timed out after 5 minutes")
-            return False
-        except Exception as e:
-            logger.error(f"Error running prompt: {e}")
-            return False    
+                    if result.returncode == 0:
+                        logger.info(f"prompt completed successfully")
+                        return True
+                    else:
+                        logger.error(f"prompt failed with return code {result.returncode}")
+                        logger.error(f"Error output: {result.stderr}")
+                        return False
+                    
+            except subprocess.TimeoutExpired:
+                logger.error(f"prompt timed out after 5 minutes")
+
+            except Exception as e:
+                logger.error(f"Unknown error running prompt: {e}")
+                return False
+            
+            retry_count += 1
+            if retry_count > 3:
+                logger.error(f"Prompt failed after 3 retries")
+                return False
+            time.sleep(1)
 
 def main():
-    """Command-line interface for the prompt generator."""
+    """Command-line interface for the discussion generator."""
     import sys
     
-    generator = PromptGenerator()
-    
-    # if len(sys.argv) < 3 :
-    #     print("Usage: python prompt_generator.py <agent_name> <topic_title>")
-    #     print(f"Available agents: {', '.join(generator.list_available_agents())}")
-    #     print(f"Available topics: {', '.join(generator.list_available_topics())}")
-    #     return
-
-    # agent_name = sys.argv[1]
-    # topic_title = sys.argv[2]
-    
-    # try:
-    #     prompt = generator.generate_prompt(agent_name, topic_title)
-    #     print(prompt)
-    # except ValueError as e:
-    #     print(f"Error: {e}")
-    # except Exception as e:
-    #     print(f"Unexpected error: {e}")
+    generator = DiscussionGenerator()
 
     simulation = False
     if simulation:
@@ -355,24 +377,32 @@ def main():
     else:
         logger.info(f"Simulation mode disabled")
 
+    capture_output = True
+
     for topic in list(generator.list_available_topics()):
+        topic_status = generator.get_topic_status(topic)
+        if topic_status == "completed":
+            logger.info(f"topic {topic} is completed, skipping")
+            logger.info("\n\n")
+            continue
+        
         agent = "moderator"
-        print(f"{agent} {topic} setting up")
+        logger.info(f"{agent} {topic} setting up")
         prompt = generator.generate_prompt(agent, topic, activity="setup")
         generator.run_cursor_agent(prompt, simulation)
-                                           
+                                        
         for agent in [a for a in generator.list_available_agents() if a != "moderator"]:
-            print(f"{agent} {topic} starting")
+            logger.info(f"{agent} {topic} starting")
             prompt = generator.generate_prompt(agent, topic)
-            generator.run_cursor_agent(prompt, simulation)
-            print(f"{agent} {topic} completed")
+            generator.run_cursor_agent(prompt, simulation, capture_output)
+            logger.info(f"{agent} {topic} completed")
             
         agent = "moderator"
-        print(f"{agent} {topic} summarising")
+        logger.info(f"{agent} {topic} summarising")
         prompt = generator.generate_prompt(agent, topic, activity="wrap_up")
         generator.run_cursor_agent(prompt, simulation)
-        print(f"topic {topic} completed")
-        print("\n\n")
+        logger.info(f"topic {topic} completed")
+        logger.info("\n\n")
         
     return
     

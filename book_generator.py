@@ -16,13 +16,15 @@ from pathlib import Path
 from typing import List, Dict, Optional
 import argparse
 import logging
+import time
+
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(lineno)-4d %(message)s',
     handlers=[
-        logging.FileHandler('book_generation.log'),
+        logging.FileHandler('book_generator.log'),
         logging.StreamHandler(sys.stdout)
     ]
 )
@@ -30,9 +32,10 @@ logger = logging.getLogger(__name__)
 
 class BookGenerator:
     def __init__(self, base_dir: str = "."):
+        self.project_root = Path(base_dir)
         self.base_dir = Path(base_dir)
-        self.topic_discussions_dir = self.base_dir / "discussions"
-        self.book_dir = self.base_dir / "book"
+        self.topic_discussions_dir = self.project_root / "discussions"
+        self.book_dir = self.project_root / "book"
         self.topic_files: List[Path] = []
         
         # Validate setup
@@ -53,10 +56,10 @@ class BookGenerator:
         # Check cursor-agent availability
         try:
             result = subprocess.run(['cursor-agent', '--version'], 
-                                  capture_output=True, text=True, timeout=10)
+                                  capture_output=False, text=True, timeout=10)
             if result.returncode != 0:
                 raise RuntimeError("cursor-agent is not working properly")
-            logger.info(f"cursor-agent version: {result.stdout.strip()}")
+            logger.info(f"cursor-agent version: {result.stdout}")
         except (subprocess.TimeoutExpired, FileNotFoundError):
             raise RuntimeError("cursor-agent not found in PATH. Please install it first.")
         
@@ -152,7 +155,6 @@ Write the next chapter taking direction from the topic discussion file: {topic_f
 Topic Information:
 - Chapter Number: {topic_info['number']}
 - Topic Title: {topic_info['title']}
-- Workshop Date: {topic_info['date']}
 
 Requirements:
 1. Write in a conversational, academic style suitable for a expert-level book
@@ -185,24 +187,31 @@ Please write a comprehensive chapter that synthesizes the workshop discussion in
         logger.info(f"Running cursor-agent for chapter generation...")
         logger.debug(f"Command: {' '.join(cmd)}")
         
-        try:
-            # Run cursor-agent
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)  # 10 minute timeout
-            
-            if result.returncode == 0:
-                logger.info(f"Chapter generation completed successfully for Topic {topic_info['number']}")
-                return True
-            else:
-                logger.error(f"Chapter generation failed with return code {result.returncode}")
-                logger.error(f"Error output: {result.stderr}")
-                return False
+        retry_count = 0
+        while True:
+            try:
+                # Run cursor-agent
+                result = subprocess.run(cmd, capture_output=False, text=True, timeout=180)  # 3 minute timeout
                 
-        except subprocess.TimeoutExpired:
-            logger.error(f"Chapter generation timed out after 10 minutes")
-            return False
-        except Exception as e:
-            logger.error(f"Error running cursor-agent: {e}")
-            return False
+                if result.returncode == 0:
+                    logger.info(f"Chapter generation completed successfully for Topic {topic_info['number']}")
+                    return True
+                else:
+                    logger.error(f"Chapter generation failed with return code {result.returncode}")
+                    logger.error(f"Error output: {result.stderr}")
+                    return False
+                    
+            except subprocess.TimeoutExpired:
+                logger.error(f"Chapter generation timed out after 10 minutes")
+            except Exception as e:
+                logger.error(f"Error running cursor-agent: {e}")
+                return False
+            
+            if retry_count > 3:
+                logger.error(f"Chapter generation failed after 3 retries")
+                return False
+            time.sleep(1)
+            retry_count += 1
     
     def generate_next_chapter(self) -> bool:
         """Generate the next chapter that needs to be written."""

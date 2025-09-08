@@ -9,6 +9,15 @@ body {
     padding: 20px;
 }
 
+
+span.header-section-number {
+    display: none;
+}
+
+span.toc-section-number {
+    display: none;
+}
+
 h1 {
     color: #2c3e50;
     border-bottom: 3px solid #3498db;
@@ -92,13 +101,33 @@ tr:nth-child(even) {
     margin: 20px 0;
 }
 
+
+/* HTML remove numbering in toc */
 #TOC ul {
     list-style-type: none;
     padding-left: 0;
 }
 
+/* HTML set font size of toc */
+ul > li > a {
+    font-size: 1.2em;
+}
+
+/* HTML set font size of toc, set indent of subsections */
+ul > li > ul > li> a {
+    font-size: 1.0em;
+    padding-left: 20px;
+}
+
+
+/* EPUB remove numbering in toc, set indent of subsections */
+ol.toc { list-style-type: none; margin: 0px 0px 0px 15px !important; }
+/* EPUB hide landmarks */
+nav#landmarks ol { display: none !important; }
+
 #TOC li {
     margin: 5px 0;
+    font-size: default;
 }
 
 #TOC a {
