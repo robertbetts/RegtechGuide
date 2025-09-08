@@ -1,28 +1,49 @@
 # Regtech Guide
 
-A guide for building technology platforms and systems in regulated environments. The FintechForge Method together with agentic, generative AI is used for all content creation.
+A reference guide for building technology platforms and systems in regulated environments. The content was curated using the FintechForge Method.
 
-## Highlevel book description
+## Description
 
-This Regtech Guide will provide a comprehensive guidence covering all aspects of aquiring, building, deploying and running software in regulated environments. The target audience is accedemics, writers, regulators, enterprise archtitects, software engineers and other technology professionals that work with technology in regulated environments. 
+This Regtech Guide provides a comprehensive reference guide covering all aspects of aquiring, building, deploying and running software in regulated environments. The target audience are accedemics, writers, regulators, enterprise archtitects, software engineers and other technology professionals who work with technology in regulated environments. 
 
-## Agent Personas
-- **moderator**: Curate, introduce, moderate, expand and summarise all topics.
+## Method Prespectives - Agent Personas
+- **moderator**: Curate, introduce, moderate, expand and synthesize.
 - **positive_expert**: Present optimistic, supportive, and forward-thinking perspectives on regtech topics, while maintaining factual accuracy and substantiating all claims.
-- **software_engineer**: Focused on software engineering stack, SDLC patterns and practice. Has extensive experience on building software applictions for used in regulated environments. 
-- **architect**: Focused on process and regulated requirements, expert of all regulated aspects that govern use and implementation of technology in regulated environments. 
-- **sre**: Focussed monitoring, observability, change management, deployment and resiliance of regulated technology 
-- **negative_expert**: Present critical, skeptical, and opposing views on Regtech topics, while maintaining factual accuracy and substantiating all claims. Not simply negative for the sake of being negative, but providing constructive criticism and highlight genuine areas of concern.
+- **software_engineer**: Focused on software engineering: technology stack, SDLC patterns and practice. Has extensive experience on building software applictions in regulated environments. 
+- **architect**: Focused on process, specific regulatory requirements. Expert of all regulated aspects that govern the use, implementation and scaling of technology in regulated environments.  
+- **sre**: Focussed on monitoring, observability, change management, deployment and resiliance of regulated technology. 
+- **negative_expert**: Present critical, skeptical, and opposing views on regtech topics, while maintaining factual accuracy and substantiating all claims. Not simply negative for the sake of being negative, but providing constructive criticism and highlighting genuine areas of concern.
 
 ## General Contribution Guidelines
 
-All facts presented must always be substantiated by publicly available content and or code. tracking the reference sources is very important. The medium of communication will be UK English or the Python programming language as appropriate.
+All facts presented must always be substantiated by publicly available content and or code. - Recording reference sources of fact is required. 
+- The medium of communication will be UK English or the Python programming language as appropriate.
 
 ## FintechForge Method
 
-A document topics.md, will contain a list of relevant discussion topics. Each topic will be tracked as completed, in_discussion and future_topic.
+Generate and review the file topics.md. 
+- This file will contain a list of relevant discussion topics. 
+- Each topic will be tracked with the the statuses of completed, in_discussion or future_topic.
+- All method perspectives will contribute to all topics.
 
-Each of the agents will read from the topics.md file and contribute to the discussion until the topic is marked as complete. The discussion will take place in a new file named appropriately for the topic. Each agent's contributions on the topic will be recorded here. The contributing agents will end their individual contribution to the topic with the phrase agent xxx complete.
+### Discussion and Research Orchestration
 
-When all the contributing agents have completed, the moderator will summarize the discussion. In topics.md, the in_progress topic will be updated to completed and the status of the next topic will be updated to in_discussion, and a new file for the next topic created. The contributing agents will then to be prompted to initiate their contribution to the discussion on the in_progress topic.
+Each of the perspective agents will read from the topics.md file and contribute to the discussion until the topic is marked as complete. 
+- Each topic discussion is recorded in a file named appropriately for the topic. 
+- Each agent's contribution on the topic will be recorded in this discussion topic file.
+- Each agents will end their contribution with the phrase agent xxx complete.
+- It is allowed that each agent could make multiple contributions, each seperately recorded.
 
+When all the contributing agents are complete, the moderator will synthesize the discussion and add this summary to the discussion topic file.
+- In topics.md, the in_progress topic will be updated to completed.
+- The status of the next topic will be updated to in_discussion
+- A new discussion topic file for the next topic created. 
+- The contributing agents will then to be prompted to initiate their contributions to the in_progress topic.
+
+### Synthesizing and Production the Final Reference Documation
+
+After all the discussion topics are complete, the moderator will synthesize each discussion topic into a single chapter. 
+- Do not to overly duplicate topics across chapters, with a preference to referencing a topic in another chapter.
+- Produce a book title / overview page for the Regtech Guide using the publishing metadata provided in the file metadata.yaml.
+- Produce a single file with structured with the overview, contents page and then each of the synthesized chapters.
+    - Render versions in markdown, HTML, epub and pdf formats 
