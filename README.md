@@ -1,6 +1,6 @@
 # Regtech Guide
 
-A reference guide for building technology platforms and systems in regulated environments. The content was curated using the FintechForge Method.
+A reference guide for building technology platforms and systems in regulated environments. The content is curated and developed using the FintechForge Method.
 
 ## Description
 
@@ -16,12 +16,13 @@ This Regtech Guide provides a comprehensive reference guide covering all aspects
 
 ## General Contribution Guidelines
 
-All facts presented must always be substantiated by publicly available content and or code. - Recording reference sources of fact is required. 
+All facts presented must always be substantiated by publicly available content. 
+- Recording source references of facts and quotes is required. 
 - The medium of communication will be UK English or the Python programming language as appropriate.
 
 ## FintechForge Method
 
-Generate and review the file topics.md. 
+Generate and review the file topics.md.
 - This file will contain a list of relevant discussion topics. 
 - Each topic will be tracked with the statuses of completed, in_discussion or future_topic.
 - All method perspectives will contribute to all topics.
