@@ -41,7 +41,7 @@ When all the contributing agents are complete, the moderator will synthesize the
 - A new discussion topic file for the next topic created. 
 - The contributing agents will then to be prompted to initiate their contributions to the in_progress topic.
 
-### Synthesizing and Production of the Final Reference Documentation
+### Producing the Final Reference Documentation
 
 After all the discussion topics are complete, the moderator will synthesize each discussion topic into a single chapter. 
 - Do not overly duplicate topics across chapters, with a preference to referencing a topic in another chapter.
