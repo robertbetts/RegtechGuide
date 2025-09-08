@@ -31,8 +31,7 @@ class EbookGenerator:
         self.book_dir = self.project_root / "book"
         self.output_dir = self.project_root / "output"
         self.metadata_file = self.project_root / "metadata.yaml"        
-        self.overview_file = self.book_dir / "overview.md"
-        self.contents_file = self.book_dir / "Contents.md"
+        self.overview_file = self.book_dir / "Book_Overview.md"
         
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(exist_ok=True)
@@ -78,6 +77,10 @@ class EbookGenerator:
         
         with open(combined_file, 'w', encoding='utf-8') as outfile:
 
+            logger.info(f"Processing {self.overview_file.name}...")
+            if not self.overview_file.exists():
+                raise Exception(f"Overview file not found: {self.overview_file}")
+                return None
             with open(self.overview_file, 'r', encoding='utf-8') as infile:
                 content = infile.read()
             outfile.write(content)
@@ -236,7 +239,7 @@ class EbookGenerator:
             if not epub_file:
                 success = False
                 
-         if format in ['pdf', 'all']:  
+        if format in ['pdf', 'all']:
             # Generate PDF
             pdf_file = self.generate_pdf(combined_file)
             if not pdf_file:

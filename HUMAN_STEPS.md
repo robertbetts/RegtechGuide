@@ -12,13 +12,14 @@
 
 ## Step 5 - prompt
 
-Using fintech_topics.md as a guide, create overview.md and place it in the book folder
-- Create an introduction section that briefly summarises each each chapter.
-- Reference the creative commons license from the file LICENSE.
+Create book/Book_Overview.md
+- Using discussions/topics.md as a guide and all the book/Chapter_*.md files
+- Create an introduction section that briefly summarises each each chapter
+- Get book license info from README.md
 
 ## Step 6 - prompt (Optional step for additional analysis of the generative content)
 
-Review all the files in the folder book, referencing overview.md and contents.md as a structural guides. Map in detail all the themes in the book, connecting and highlighting duplicated topics. 
+Review all the files in the folder book, referencing Overview.md structural guides. Map in detail all the themes in the book, connecting and highlighting duplicated topics. 
 - store all analysis output in an analysis folder
 - create a table of theme, chapter, line numbers
 - create a mermaid flow to visually represent these relationships
