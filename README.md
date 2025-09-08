@@ -46,5 +46,5 @@ When all the contributing agents are complete, the moderator will synthesize the
 After all the discussion topics are complete, the moderator will synthesize each discussion topic into a single chapter. 
 - Do not overly duplicate topics across chapters, with a preference to referencing a topic in another chapter.
 - Produce a book title / overview page for the Regtech Guide using the publishing metadata provided in the file metadata.yaml.
-- Produce a single file with structured with the overview, contents page and then each of the synthesized chapters.
+- Produce a single file structured with an overview page, a contents page and then each of the synthesized chapters.
     - Render versions in markdown, HTML, epub and pdf formats 
