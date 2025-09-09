@@ -20,6 +20,11 @@ All facts presented must always be substantiated by publicly available content.
 - Recording source references of facts and quotes is required. 
 - The medium of communication will be UK English or the Python programming language as appropriate.
 
+## Licensing
+- Regtech Guide rights are licenced through the Creative Commons Attribution 4.0 International License
+  - https://creativecommons.org/licenses/by/4.0/
+- Python code is licensed through the MIT license
+
 ## FintechForge Method
 
 Generate and review the file topics.md.

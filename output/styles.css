@@ -101,29 +101,19 @@ tr:nth-child(even) {
     margin: 20px 0;
 }
 
-
-/* HTML remove numbering in toc */
 #TOC ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-/* HTML set font size of toc */
 ul > li > a {
     font-size: 1.2em;
 }
 
-/* HTML set font size of toc, set indent of subsections */
 ul > li > ul > li> a {
     font-size: 1.0em;
     padding-left: 20px;
 }
-
-
-/* EPUB remove numbering in toc, set indent of subsections */
-ol.toc { list-style-type: none; margin: 0px 0px 0px 15px !important; }
-/* EPUB hide landmarks */
-nav#landmarks ol { display: none !important; }
 
 #TOC li {
     margin: 5px 0;
